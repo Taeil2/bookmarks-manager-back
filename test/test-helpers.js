@@ -8,6 +8,7 @@ function makeUsersArray() {
       email: 'test1@gmail.com',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
+      note: null,
       enable_pages: false,
       enable_folders: true,
       icon_size: 'medium',
@@ -22,6 +23,7 @@ function makeUsersArray() {
       email: 'test2@gmail.com',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
+      note: null,
       enable_pages: false,
       enable_folders: true,
       icon_size: 'medium',
@@ -36,6 +38,7 @@ function makeUsersArray() {
       email: 'test3@gmail.com',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
+      note: null,
       enable_pages: false,
       enable_folders: true,
       icon_size: 'medium',
@@ -50,6 +53,7 @@ function makeUsersArray() {
       email: 'test4@gmail.com',
       password: 'password',
       date_created: new Date('2029-01-22T16:28:32.615Z'),
+      note: null,
       enable_pages: false,
       enable_folders: true,
       icon_size: 'medium',
@@ -222,9 +226,6 @@ function makeBookmarkImagesArray() {
   ];
 }
 
-
-// These are not implemented.
-
 // function makeExpectedArticle(users, article, comments=[]) {
 //   const author = users
 //     .find(user => user.id === article.author_id)
@@ -371,13 +372,13 @@ function seedUsers(db, users) {
 //     )
 // }
 
-// function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
-//   const token = jwt.sign({ user_id: user.id }, secret, {
-//     subject: user.user_name,
-//     algorithm: 'HS256',
-//   })
-//   return `Bearer ${token}`
-// }
+function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
+  const token = jwt.sign({ user_id: user.id }, secret, {
+    subject: user.email,
+    algorithm: 'HS256',
+  })
+  return `Bearer ${token}`
+}
 
 module.exports = {
   makeUsersArray,
@@ -394,6 +395,6 @@ module.exports = {
   cleanTables,
   // seedArticlesTables,
   // seedMaliciousArticle,
-  // makeAuthHeader,
+  makeAuthHeader,
   seedUsers,
 }

@@ -13,6 +13,7 @@ CREATE TABLE users (
   email TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
   date_created TIMESTAMPTZ NOT NULL DEFAULT now(),
+  note TEXT, -- should this be MEDIUMTEXT?
   enable_pages BOOLEAN NOT NULL DEFAULT FALSE,
   enable_folders BOOLEAN NOT NULL DEFAULT TRUE,
   icon_size icon_size_type NOT NULL DEFAULT 'medium',
