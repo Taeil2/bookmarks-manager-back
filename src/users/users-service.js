@@ -42,6 +42,17 @@ const UsersService = {
       date_created: new Date(user.date_created),
     }
   },
+  getUserById(db, id) {
+    return db('users')
+      .select('*')
+      .where('id', id)
+      .first()
+  },
+  updateUser(db, id, newUserFields) {
+    return db('users')
+      .where({ id })
+      .update(newUserFields)
+  }
 }
 
 module.exports = UsersService

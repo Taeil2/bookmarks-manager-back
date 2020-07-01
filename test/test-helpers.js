@@ -226,31 +226,74 @@ function makeBookmarkImagesArray() {
   ];
 }
 
-// function makeExpectedArticle(users, article, comments=[]) {
-//   const author = users
-//     .find(user => user.id === article.author_id)
+function makeExpectedPage(user, page) {
+  return {
+    id: page.id,
+    user_id: user.id,
+    name: page.name,
+    page_order: page.page_order,
+    is_drawer: page.is_drawer
+  }
+}
 
-//   const number_of_comments = comments
-//     .filter(comment => comment.article_id === article.id)
-//     .length
+function makeExpectedBookmark() {
 
-//   return {
-//     id: article.id,
-//     style: article.style,
-//     title: article.title,
-//     content: article.content,
-//     date_created: article.date_created.toISOString(),
-//     number_of_comments,
-//     author: {
-//       id: author.id,
-//       user_name: author.user_name,
-//       full_name: author.full_name,
-//       nickname: author.nickname,
-//       date_created: author.date_created.toISOString(),
-//       date_modified: author.date_modified || null,
-//     },
-//   }
-// }
+}
+
+function makeExpectedBookmarkImage() {
+
+}
+
+function makeMaliciousPage() {
+  const maliciousPage = {
+    id: 1,
+    user_id: users[0].id,
+    name: 'Bad Name <script>alert("xss");</script>',
+    page_order: 1,
+    is_drawer: false
+  }
+  const expectedPage = {
+    id: 1,
+    user_id: users[0].id,
+    name: 'Bad Name <script>alert("xss");</script>',
+    name: 'Bad Name &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+    page_order: 1,
+    is_drawer: false
+  }
+  return {
+    maliciousPage,
+    expectedPage,
+  }
+}
+
+// do this
+function seedMaliciousPage() {
+  return seedUsers(db, [user])
+    .then(() =>
+      db
+        .into('pages')
+        .insert([page])
+    )
+}
+
+
+function makeMaliciousBookmark() {
+
+}
+
+function seedMaliciousBookmark() {
+
+}
+
+function makeMaliciousBookmarkImage() {
+
+}
+
+function seedMaliciousBookmarkImage() {
+
+}
+
+
 
 // function makeExpectedArticleComments(users, articleId, comments) {
 //   const expectedComments = comments
@@ -272,26 +315,6 @@ function makeBookmarkImagesArray() {
 //       }
 //     }
 //   })
-// }
-
-// function makeMaliciousArticle(user) {
-//   const maliciousArticle = {
-//     id: 911,
-//     style: 'How-to',
-//     date_created: new Date(),
-//     title: 'Naughty naughty very naughty <script>alert("xss");</script>',
-//     author_id: user.id,
-//     content: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
-//   }
-//   const expectedArticle = {
-//     ...makeExpectedArticle([user], maliciousArticle),
-//     title: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
-//     content: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`,
-//   }
-//   return {
-//     maliciousArticle,
-//     expectedArticle,
-//   }
 // }
 
 function makeBookmarksFixtures() {
@@ -363,15 +386,6 @@ function seedUsers(db, users) {
 //   })
 // }
 
-// function seedMaliciousArticle(db, user, article) {
-//   return seedUsers(db, [user])
-//     .then(() =>
-//       db
-//         .into('blogful_articles')
-//         .insert([article])
-//     )
-// }
-
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.email,
@@ -386,10 +400,21 @@ module.exports = {
   makeBookmarksArray,
   makeBookmarkImagesArray,
 
+  makeExpectedPage,
+  makeExpectedBookmark,
+  makeExpectedBookmarkImage,
+
+  makeMaliciousPage,
+  makeMaliciousBookmark,
+  makeMaliciousBookmarkImage,
+
+  seedMaliciousPage,
+  seedMaliciousBookmark,
+  seedMaliciousBookmarkImage,
+
   // makeExpectedArticle,
   // makeExpectedArticleComments,
   // makeMaliciousArticle,
-  // makeCommentsArray,
 
   makeBookmarksFixtures,
   cleanTables,
