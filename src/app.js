@@ -7,9 +7,9 @@ const { NODE_ENV } = require('./config')
 
 const authRouter = require('./auth/auth-router')
 const usersRouter = require('./users/users-router')
-// const pagesRouter = require('./pages/pages-router')
-// const bookmarksRouter = require('./bookmarks/bookmarks-router')
-// const bookmarkImagesRouter = require('./bookmarkImages/bookmark-images-router')
+const pagesRouter = require('./pages/pages-router')
+const bookmarksRouter = require('./bookmarks/bookmarks-router')
+const bookmarkImagesRouter = require('./bookmark-images/bookmark-images-router')
 
 const app = express()
 
@@ -27,9 +27,9 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
-// app.use('/api/pages', pagesRouter)
-// app.use('/api/bookmarks', bookmarksRouter)
-// app.use('/api/bookmark-images', bookmarkImagesRouter)
+app.use('/api/pages', pagesRouter)
+app.use('/api/bookmarks', bookmarksRouter)
+app.use('/api/bookmark-images', bookmarkImagesRouter)
 
 app.use(function errorHandler(error, req, res, next) {
   let response

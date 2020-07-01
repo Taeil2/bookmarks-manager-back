@@ -2,6 +2,7 @@ const express = require('express')
 const xss = require('xss')
 const logger = require('../logger')
 const PagesService = require('./pages-service')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 const pagesRouter = express.Router()
 const bodyParser = express.json()
@@ -15,9 +16,9 @@ const serializePage = (page) => ({
 })
 
 pagesRouter
-  .route('/pages/:user_id')
-  .get((req, res, next) => {
-    PagesService.getUserPages(req.app.get('db'))
+  .route('/')
+  .get(requireAuth, (req, res, next) => {
+    PagesService.getUserPages(req.app.get('db'), req.user.id)
       .then(pages => {
         res.json(pages.map(serializePage))
       })
@@ -25,8 +26,7 @@ pagesRouter
   })
 
 pagesRouter
-  .route('/pages')
-  .post(bodyParser, (req, res, next) => {
+  .post('/', requireAuth, bodyParser, (req, res, next) => {
     for (const field of ['user_id', 'name', 'page_order']) {
       if (!req.body[field]) {
         logger.error(`${field} is required`)
@@ -50,8 +50,8 @@ pagesRouter
   })
 
 pagesRouter
-  .route('/pages/:page_id')
-  .all((req, res, next) => {
+  .route('/:page_id')
+  .all(requireAuth, (req, res, next) => {
     const { page_id } = req.params
     PagesService.getPageById(req.app.get('db'), page_id)
       .then(page => {
@@ -69,7 +69,7 @@ pagesRouter
   .get((req, res) => {
     res.json(serializePage(res.page))
   })
-  .update((req, res, next) => {
+  .patch(bodyParser, (req, res, next) => {
     const { name, page_order } = req.body
     const newPageFields = { name, page_order }
 
@@ -88,3 +88,5 @@ pagesRouter
       })
       .catch(next)
   })
+
+module.exports = pagesRouter

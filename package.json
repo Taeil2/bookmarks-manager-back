@@ -27,6 +27,7 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "email-validator": "^2.0.4",
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
@@ -35,6 +36,7 @@
     "morgan": "^1.10.0",
     "pg": "^7.18.2",
     "postgrator-cli": "^3.2.0",
+    "valid-url": "^1.0.9",
     "winston": "^3.3.2",
     "xss": "^1.0.7"
   },

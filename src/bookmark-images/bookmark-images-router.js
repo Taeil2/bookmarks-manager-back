@@ -2,6 +2,7 @@ const express = require('express')
 const xss = require('xss')
 const logger = require('../logger')
 const BookmarkImagesService = require('./bookmark-images-service')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 const bookmarkImagesRouter = express.Router()
 const bodyParser = express.json()
@@ -17,8 +18,8 @@ const serializeBookmarkImage = (bookmarkImage) => ({
 })
 
 bookmarkImagesRouter
-  .route('/bookmark-images/:base_url')
-  .get((req, res, next) => {
+  .route('/:base_url')
+  .get(requireAuth, (req, res, next) => {
     BookmarkImagesService.getBookmarkImagesByUrl(req.app.get('db'), base_url)
       .then(bookmarkImages => {
         res.json(bookmarkImages.map(serializeBookmarkImage))
@@ -27,8 +28,7 @@ bookmarkImagesRouter
   })
 
 bookmarkImagesRouter
-  .route('/bookmark-images')
-  .post(bodyParser, (req, res, next) => {
+  .post('/', requireAuth, bodyParser, (req, res, next) => {
     for (const field of ['base_url', 'image_url']) {
       if (!req.body[field]) {
         logger.error(`${field} is required`)
@@ -55,3 +55,5 @@ bookmarkImagesRouter
       })
       .catch(next)
   })
+
+module.exports = bookmarkImagesRouter

@@ -3,6 +3,7 @@ const { isWebUri } = require('valid-url')
 const xss = require('xss')
 const logger = require('../logger')
 const BookmarksService = require('./bookmarks-service')
+const { requireAuth } = require('../middleware/jwt-auth')
 
 const bookmarksRouter = express.Router()
 const bodyParser = express.json()
@@ -20,7 +21,7 @@ const serializeBookmark = (bookmark) => ({
 })
 
 bookmarksRouter
-  .route('/bookmarks/:page_id')
+  .route('/:page_id')
   .get((req, res, next) => {
     const { page_id } = req.params
     BookmarksService.getBookmarksByPage(req.app.get('db'), page_id)
@@ -31,8 +32,7 @@ bookmarksRouter
   })
 
 bookmarksRouter
-  .route('/bookmarks')
-  .post(bodyParser, (req, res, next) => {
+  .post('/', bodyParser, (req, res, next) => {
     for (const field of ['page_id', 'name', 'url', 'base_url', 'bookmark_order']) {
       if (!req.body[field]) {
         logger.error(`${field} is required`)
@@ -62,7 +62,7 @@ bookmarksRouter
   })
 
 bookmarksRouter
-  .route('/bookmarks/:bookmark_id')
+  .route('/:bookmark_id')
   .all((req, res, next) => {
     const { bookmark_id } = req.params
     BookmarksService.getBookmarkById(req.app.get('db'), bookmark_id)
@@ -81,7 +81,7 @@ bookmarksRouter
   .get((req, res) => {
     res.json(serializeBookmark(res.bookmark))
   })
-  .update((req, res, next) => {
+  .patch(bodyParser, (req, res, next) => {
     const { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden } = req.body
     const newBookmarkFields = { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden }
 
@@ -100,3 +100,5 @@ bookmarksRouter
       })
       .catch(next)
   })
+
+module.exports = bookmarksRouter
