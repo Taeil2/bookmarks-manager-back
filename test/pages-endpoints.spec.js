@@ -8,36 +8,38 @@ describe('Pages Endpoints', () => {
   before('make knex instance', () => {
     db = knex({
       client: 'pg',
-      connection: process.env.TEST_DB_URL,
+      connection: process.env.TEST_DATABASE_URL,
     })
     app.set('db', db)
   })
 
   after('disconnect from db', () => db.destroy())
 
-  before('cleanup', () => db('pages').truncate())
+  before('cleanup', () => helpers.cleanTables(db))
 
-  afterEach('cleanup', () => db('pages').truncate())
+  afterEach('cleanup', () => helpers.cleanTables(db))
 
   describe(`Unauthorized requests`, () => {
     const testUsers = helpers.makeUsersArray();
     const testPages = helpers.makePagesArray(testUsers);
+    const userNoCreds = { email: '', password: '' }
 
-    beforeEach('insert pages', () => {
-      return db
-        .into('pages')
-        .insert(testPages)
+    beforeEach('insert users and pages', () => {
+      db.into('users').insert(testUsers)
+      db.into('pages').insert(testPages)
     })
 
     it(`responds with 401 Unauthorized for GET /pages`, () => {
       return supertest(app)
-        .get('/pages')
+        .get('/api/pages')
+        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
         .expect(401, { error: 'Unauthorized request' })
     })
 
     it(`responds with 401 Unauthorized for POST /pages`, () => {
       return supertest(app)
-        .post('/pages')
+        .post('/api/pages')
+        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
         .send({ title: 'test-title', url: 'http://some.thing.com', rating: 1 })
         .expect(401, { error: 'Unauthorized request' })
     })
@@ -45,24 +47,33 @@ describe('Pages Endpoints', () => {
     it(`responds with 401 Unauthorized for GET /pages/:id`, () => {
       const secondPage = testPages[1]
       return supertest(app)
-        .get(`/pages/${secondPage.id}`)
+        .get(`/api/pages/${secondPage.id}`)
+        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
         .expect(401, { error: 'Unauthorized request' })
     })
 
     it(`responds with 401 Unauthorized for DELETE /pages/:id`, () => {
       const secondPage = testPages[1]
       return supertest(app)
-        .delete(`/pages/${secondPage.id}`)
+        .delete(`/api/pages/${secondPage.id}`)
+        .set('Authorization', helpers.makeAuthHeader(userNoCreds))
         .expect(401, { error: 'Unauthorized request' })
     })
   })
 
   describe('GET /pages', () => {
+    const testUsers = helpers.makeUsersArray();
+    const testPages = helpers.makePagesArray(testUsers);
+
+    beforeEach('insert users', () => {
+      db.into('users').insert(testUsers)
+    })
+
     context(`Given no pages`, () => {
-      it(`responds with 200 and an empty list`, () => {
+      it.only(`responds with 200 and an empty list`, () => {
         return supertest(app)
-          .get('/pages')
-          .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+          .get('/api/pages')
+          .set('Authorization', helpers.makeAuthHeader(testUsers[0]))
           .expect(200, [])
       })
     })
@@ -79,14 +90,15 @@ describe('Pages Endpoints', () => {
 
       it('gets the pages from the store', () => {
         return supertest(app)
-          .get('/pages')
+          .get('/api/pages')
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(200, testPages)
       })
     })
 
     context(`Given an XSS attack pages`, () => {
-      const { maliciousPage, expectedPage } = helpers.makeMaliciousPage()
+      const testUsers = helpers.makeUsersArray();
+      const { maliciousPage, expectedPage } = helpers.makeMaliciousPage(testUsers)
 
       beforeEach('insert malicious pages', () => {
         return db
@@ -96,7 +108,7 @@ describe('Pages Endpoints', () => {
 
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/pages`)
+          .get(`/api/pages`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(200)
           .expect(res => {
@@ -111,7 +123,7 @@ describe('Pages Endpoints', () => {
     context(`Given no pages`, () => {
       it(`responds 404 when page doesn't exist`, () => {
         return supertest(app)
-          .get(`/pages/123`)
+          .get(`/api/pages/123`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(404, {
             error: { message: `Page Not Found` }
@@ -133,14 +145,15 @@ describe('Pages Endpoints', () => {
         const pageId = 2
         const expectedPage = testPages[pageId - 1]
         return supertest(app)
-          .get(`/pages/${pageId}`)
+          .get(`/api/pages/${pageId}`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(200, expectedPage)
       })
     })
 
     context(`Given an XSS attack page`, () => {
-      const { maliciousPage, expectedPage} = helpers.makeMaliciousPage()
+      const testUsers = helpers.makeUsersArray();
+      const { maliciousPage, expectedPage} = helpers.makeMaliciousPage(testUsers)
 
       beforeEach('insert malicious page', () => {
         return db
@@ -150,7 +163,7 @@ describe('Pages Endpoints', () => {
 
       it('removes XSS attack content', () => {
         return supertest(app)
-          .get(`/pages/${maliciousPage.id}`)
+          .get(`/api/pages/${maliciousPage.id}`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(200)
           .expect(res => {
@@ -165,7 +178,7 @@ describe('Pages Endpoints', () => {
     context(`Given no pages`, () => {
       it(`responds 404 when page doesn't exist`, () => {
         return supertest(app)
-          .delete(`/pages/123`)
+          .delete(`/api/pages/123`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(404, {
             error: { message: `Page Not Found` }
@@ -187,12 +200,12 @@ describe('Pages Endpoints', () => {
         const idToRemove = 2
         const expectedPages = testPages.filter(bm => bm.id !== idToRemove)
         return supertest(app)
-          .delete(`/pages/${idToRemove}`)
+          .delete(`/api/pages/${idToRemove}`)
           .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
           .expect(204)
           .then(() =>
             supertest(app)
-              .get(`/pages`)
+              .get(`/api/pages`)
               .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
               .expect(expectedPages)
           )
@@ -208,7 +221,7 @@ describe('Pages Endpoints', () => {
         rating: 1,
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPageMissingTitle)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'title' is required`)
@@ -221,7 +234,7 @@ describe('Pages Endpoints', () => {
         rating: 1,
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPageMissingUrl)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'url' is required`)
@@ -234,7 +247,7 @@ describe('Pages Endpoints', () => {
         // rating: 1,
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPageMissingRating)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'rating' is required`)
@@ -247,7 +260,7 @@ describe('Pages Endpoints', () => {
         rating: 'invalid',
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPageInvalidRating)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'rating' must be a number between 0 and 5`)
@@ -260,7 +273,7 @@ describe('Pages Endpoints', () => {
         rating: 1,
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPageInvalidUrl)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(400, `'url' must be a valid URL`)
@@ -274,7 +287,7 @@ describe('Pages Endpoints', () => {
         rating: 1,
       }
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(newPage)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(201)
@@ -287,16 +300,17 @@ describe('Pages Endpoints', () => {
         })
         .then(res =>
           supertest(app)
-            .get(`/pages/${res.body.id}`)
+            .get(`/api/pages/${res.body.id}`)
             .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
             .expect(res.body)
         )
     })
 
     it('removes XSS attack content from response', () => {
-      const { maliciousPage, expectedPage } = helpers.makeMaliciousPage()
+      const testUsers = helpers.makeUsersArray();
+      const { maliciousPage, expectedPage } = helpers.makeMaliciousPage(testUsers)
       return supertest(app)
-        .post(`/pages`)
+        .post(`/api/pages`)
         .send(maliciousPage)
         .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
         .expect(201)

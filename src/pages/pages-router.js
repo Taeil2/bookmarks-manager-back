@@ -27,14 +27,16 @@ pagesRouter
 
 pagesRouter
   .post('/', requireAuth, bodyParser, (req, res, next) => {
-    for (const field of ['user_id', 'name', 'page_order']) {
+    const user_id = req.user.id
+
+    for (const field of ['name', 'page_order']) {
       if (!req.body[field]) {
         logger.error(`${field} is required`)
         return res.status(400).send(`'${field}' is required`)
       }
     }
 
-    const { user_id, name, page_order, is_drawer } = req.body
+    const { name, page_order, is_drawer } = req.body
 
     const newPage = {user_id, name, page_order, is_drawer }
 

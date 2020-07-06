@@ -17,6 +17,7 @@ const serializeBookmark = (bookmark) => ({
   bookmark_order: bookmark.bookmark_order,
   folder_name: xss(bookmark.folder_name),
   group_name: xss(bookmark.group_name),
+  is_folder: bookmark.is_folder,
   hidden: bookmark.hidden
 })
 
@@ -33,27 +34,27 @@ bookmarksRouter
 
 bookmarksRouter
   .post('/', bodyParser, (req, res, next) => {
-    for (const field of ['page_id', 'name', 'url', 'base_url', 'bookmark_order']) {
+    for (const field of ['page_id', 'name', 'bookmark_order']) {
       if (!req.body[field]) {
         logger.error(`${field} is required`)
         return res.status(400).send(`'${field}' is required`)
       }
     }
 
-    const { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden } = req.body
+    const { page_id, name, url, base_url, bookmark_order, folder_name, group_name, is_folder, hidden } = req.body
 
-    if (!isWebUri(url)) {
-      logger.error(`Invalid url '${url}' supplied`)
-      return res.status(400).send(`'url' must be a valid URL`)
-    }
+    // if (!isWebUri(url)) {
+    //   logger.error(`Invalid url '${url}' supplied`)
+    //   return res.status(400).send(`'url' must be a valid URL`)
+    // }
     // any additional checks here? such as name, folder name, group name length? does base_url need to be a valid url?
 
-    const newBookmark = { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden }
+    const newBookmark = { page_id, name, url, base_url, bookmark_order, folder_name, group_name, is_folder, hidden }
 
     BookmarksService.insertBookmark(req.app.get('db'), newBookmark)
       .then(bookmark => {
         logger.info(`Bookmark with id ${bookmark.id} created.`)
-        res
+        return res
           .status(201)
           // .location(`/bookmarks/${bookmark.id}`)
           .json(serializeBookmark(bookmark))
@@ -79,24 +80,41 @@ bookmarksRouter
       .catch(next)
   })
   .get((req, res) => {
-    res.json(serializeBookmark(res.bookmark))
+    return res.json(serializeBookmark(res.bookmark))
   })
   .patch(bodyParser, (req, res, next) => {
+    const { bookmark_id } = req.params
+
     const { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden } = req.body
     const newBookmarkFields = { page_id, name, url, base_url, bookmark_order, folder_name, group_name, hidden }
 
     BookmarksService.updateBookmark(req.app.get('db'), bookmark_id, newBookmarkFields)
-      .then(numRowsAffected => {
+      .then(bookmark => {
         logger.info(`Bookmark with id ${bookmark_id} updated.`)
-        res.status(204).end()
+        return res
+          .status(204)
+          .json(serializeBookmark(bookmark))
       })
       .catch(next)
   })
   .delete((req, res, next) => {
+    const { bookmark_id } = req.params
+    // set the order of each bookmark after it to minus 1
+    BookmarksService.getBookmarksByPage(req.app.get('db'), res.bookmark.page_id)
+      .then(bookmarks => {
+        bookmarks.forEach((bookmark) => {
+          if (bookmark.bookmark_order > res.bookmark.bookmark_order) {
+            let newOrder = bookmark.bookmark_order - 1
+            BookmarksService.updateBookmark(req.app.get('db'), bookmark.id, {bookmark_order: newOrder})
+          }
+        });
+      })
+      .catch(next)
+    // delete the bookmark
     BookmarksService.deleteBookmark(req.app.get('db'), bookmark_id)
       .then(numRowsAffected => {
         logger.info(`Bookmark with id ${bookmark_id} deleted.`)
-        res.status(204).end()
+        return res.status(204).end()
       })
       .catch(next)
   })

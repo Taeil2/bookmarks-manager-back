@@ -18,34 +18,27 @@ const serializeBookmarkImage = (bookmarkImage) => ({
 })
 
 bookmarkImagesRouter
-  .route('/:base_url')
+  .route('/')
   .get(requireAuth, (req, res, next) => {
+    const base_url = req.query.base_url
     BookmarkImagesService.getBookmarkImagesByUrl(req.app.get('db'), base_url)
       .then(bookmarkImages => {
-        res.json(bookmarkImages.map(serializeBookmarkImage))
+        return res.json(bookmarkImages.map(serializeBookmarkImage))
       })
       .catch(next)
   })
 
 bookmarkImagesRouter
   .post('/', requireAuth, bodyParser, (req, res, next) => {
-    for (const field of ['base_url', 'image_url']) {
-      if (!req.body[field]) {
-        logger.error(`${field} is required`)
-        return res.status(400).send(`'${field}' is required`)
-      }
-    }
+    const { url, icons } = req.body
+    icons.forEach((icon) => {
+      const { width, height, bytes } = icon
+      const base_url = url
+      const image_url = icon.url
+      const image_format = icon.format
 
-    const { base_url, bytes, width, height, image_url, image_format } = req.body
-
-    if (!isWebUri(image_url)) {
-      logger.error(`Invalid url '${image_url}' supplied`)
-      return res.status(400).send(`'url' must be a valid URL`)
-    }
-
-    const newBookmarkImage = { base_url, bytes, width, height, image_url, image_format }
-
-    BookmarkImagesService.insertBookmarkImage(req.app.get('db'), newBookmarkImage)
+      const newBookmarkImage = { base_url, bytes, width, height, image_url, image_format }
+      BookmarkImagesService.insertBookmarkImage(req.app.get('db'), newBookmarkImage)
       .then(bookmarkImage => {
         logger.info(`Bookmark Image with id ${bookmarkImage.id} created.`)
         res
@@ -54,6 +47,7 @@ bookmarkImagesRouter
           .json(serializeBookmarkImage(bookmarkImage))
       })
       .catch(next)
+    })
   })
 
 module.exports = bookmarkImagesRouter

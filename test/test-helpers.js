@@ -244,7 +244,7 @@ function makeExpectedBookmarkImage() {
 
 }
 
-function makeMaliciousPage() {
+function makeMaliciousPage(users) {
   const maliciousPage = {
     id: 1,
     user_id: users[0].id,
