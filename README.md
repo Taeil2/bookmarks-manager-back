@@ -7,16 +7,16 @@ Main features:
 - Write a note
 - Adjust the layout and appearance
 
-[http://localhost:3000](Live Demo)
-[https://github.com/Taeil2/bookmarks-manager-front](Front End Repo)
+[Live Demo](http://localhost:3000)<br />
+[Front End Repo](https://github.com/Taeil2/bookmarks-manager-front)
 
 ### Back End Stack
-Node.js
-Express
+Node.js<br />
+Express<br />
 PostgreSQL
 
 ### Libraries
-bcryptjs
-jsonwebtoken
-xss
+bcryptjs<br />
+jsonwebtoken<br />
+xss<br />
 knex
