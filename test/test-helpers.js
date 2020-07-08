@@ -82,48 +82,48 @@ function makePagesArray(users) {
       page_order: null,
       is_drawer: true
     },
-    {
-      id: 3,
-      user_id: users[1].id,
-      name: 'Page 1',
-      page_order: 1,
-      is_drawer: false
-    },
-    {
-      id: 4,
-      user_id: users[1].id,
-      name: 'Drawer',
-      page_order: null,
-      is_drawer: true
-    },
-    {
-      id: 5,
-      user_id: users[2].id,
-      name: 'Page 1',
-      page_order: 1,
-      is_drawer: false
-    },
-    {
-      id: 6,
-      user_id: users[2].id,
-      name: 'Drawer',
-      page_order: null,
-      is_drawer: true
-    },
-    {
-      id: 7,
-      user_id: users[3].id,
-      name: 'Page 1',
-      page_order: 1,
-      is_drawer: false
-    },
-    {
-      id: 8,
-      user_id: users[3].id,
-      name: 'Drawer',
-      page_order: null,
-      is_drawer: true
-    },
+    // {
+    //   id: 3,
+    //   user_id: users[1].id,
+    //   name: 'Page 1',
+    //   page_order: 1,
+    //   is_drawer: false
+    // },
+    // {
+    //   id: 4,
+    //   user_id: users[1].id,
+    //   name: 'Drawer',
+    //   page_order: null,
+    //   is_drawer: true
+    // },
+    // {
+    //   id: 5,
+    //   user_id: users[2].id,
+    //   name: 'Page 1',
+    //   page_order: 1,
+    //   is_drawer: false
+    // },
+    // {
+    //   id: 6,
+    //   user_id: users[2].id,
+    //   name: 'Drawer',
+    //   page_order: null,
+    //   is_drawer: true
+    // },
+    // {
+    //   id: 7,
+    //   user_id: users[3].id,
+    //   name: 'Page 1',
+    //   page_order: 1,
+    //   is_drawer: false
+    // },
+    // {
+    //   id: 8,
+    //   user_id: users[3].id,
+    //   name: 'Drawer',
+    //   page_order: null,
+    //   is_drawer: true
+    // },
   ]
 }
 
