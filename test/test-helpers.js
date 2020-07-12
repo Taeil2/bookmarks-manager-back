@@ -1,69 +1,77 @@
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 function makeUsersArray() {
   return [
     {
       id: 1,
-      email: 'test1@gmail.com',
-      password: 'password',
-      date_created: new Date('2029-01-22T16:28:32.615Z'),
+      email: "test1@gmail.com",
+      password: "password",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
       note: null,
       enable_pages: false,
       enable_folders: true,
-      icon_size: 'medium',
-      icon_shape: 'rounded',
+      icon_size: "medium",
+      icon_shape: "rounded",
       icons_per_row: 5,
-      icon_alignment: 'center',
+      icon_alignment: "center",
       enable_groups: false,
       enable_hiding: false,
+      random_background: false,
+      unsplash_url: 'https://unsplash.com/photos/phIFdC6lA4E',
     },
     {
       id: 2,
-      email: 'test2@gmail.com',
-      password: 'password',
-      date_created: new Date('2029-01-22T16:28:32.615Z'),
+      email: "test2@gmail.com",
+      password: "password",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
       note: null,
       enable_pages: false,
       enable_folders: true,
-      icon_size: 'medium',
-      icon_shape: 'rounded',
+      icon_size: "medium",
+      icon_shape: "rounded",
       icons_per_row: 5,
-      icon_alignment: 'center',
+      icon_alignment: "center",
       enable_groups: false,
       enable_hiding: false,
+      random_background: false,
+      unsplash_url: 'https://unsplash.com/photos/phIFdC6lA4E',
     },
     {
       id: 3,
-      email: 'test3@gmail.com',
-      password: 'password',
-      date_created: new Date('2029-01-22T16:28:32.615Z'),
+      email: "test3@gmail.com",
+      password: "password",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
       note: null,
       enable_pages: false,
       enable_folders: true,
-      icon_size: 'medium',
-      icon_shape: 'rounded',
+      icon_size: "medium",
+      icon_shape: "rounded",
       icons_per_row: 5,
-      icon_alignment: 'center',
+      icon_alignment: "center",
       enable_groups: false,
       enable_hiding: false,
+      random_background: false,
+      unsplash_url: 'https://unsplash.com/photos/phIFdC6lA4E',
     },
     {
       id: 4,
-      email: 'test4@gmail.com',
-      password: 'password',
-      date_created: new Date('2029-01-22T16:28:32.615Z'),
+      email: "test4@gmail.com",
+      password: "password",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
       note: null,
       enable_pages: false,
       enable_folders: true,
-      icon_size: 'medium',
-      icon_shape: 'rounded',
+      icon_size: "medium",
+      icon_shape: "rounded",
       icons_per_row: 5,
-      icon_alignment: 'center',
+      icon_alignment: "center",
       enable_groups: false,
       enable_hiding: false,
+      random_background: false,
+      unsplash_url: 'https://unsplash.com/photos/phIFdC6lA4E',
     },
-  ]
+  ];
 }
 
 function makePagesArray(users) {
@@ -71,16 +79,16 @@ function makePagesArray(users) {
     {
       id: 1,
       user_id: users[0].id,
-      name: 'Page 1',
+      name: "Page 1",
       page_order: 1,
-      is_drawer: false
+      is_drawer: false,
     },
     {
       id: 2,
       user_id: users[0].id,
-      name: 'Drawer',
+      name: "Drawer",
       page_order: null,
-      is_drawer: true
+      is_drawer: true,
     },
     // {
     //   id: 3,
@@ -124,7 +132,7 @@ function makePagesArray(users) {
     //   page_order: null,
     //   is_drawer: true
     // },
-  ]
+  ];
 }
 
 function makeBookmarksArray(pages) {
@@ -132,46 +140,46 @@ function makeBookmarksArray(pages) {
     {
       id: 1,
       page_id: pages[0].id,
-      name: 'Google',
-      url: 'https://www.google.com/',
-      base_url: 'https://www.google.com',
+      name: "Google",
+      url: "https://www.google.com/",
+      base_url: "https://www.google.com",
       bookmark_order: 1,
       folder_name: null,
       group_name: null,
-      hidden: false
+      hidden: false,
     },
     {
       id: 2,
       page_id: pages[0].id,
-      name: 'Yahoo',
-      url: 'https://www.yahoo.com/',
-      base_url: 'https://www.yahoo.com',
+      name: "Yahoo",
+      url: "https://www.yahoo.com/",
+      base_url: "https://www.yahoo.com",
       bookmark_order: 2,
       folder_name: null,
       group_name: null,
-      hidden: false
+      hidden: false,
     },
     {
       id: 3,
       page_id: pages[0].id,
-      name: 'Bing',
-      url: 'https://www.bing.com/',
-      base_url: 'https://www.bing.com',
+      name: "Bing",
+      url: "https://www.bing.com/",
+      base_url: "https://www.bing.com",
       bookmark_order: 3,
       folder_name: null,
       group_name: null,
-      hidden: false
+      hidden: false,
     },
     {
       id: 4,
       page_id: pages[0].id,
-      name: 'Baidu',
-      url: 'https://www.baidu.com/',
-      base_url: 'https://www.baidu.com',
+      name: "Baidu",
+      url: "https://www.baidu.com/",
+      base_url: "https://www.baidu.com",
       bookmark_order: 4,
       folder_name: null,
       group_name: null,
-      hidden: false
+      hidden: false,
     },
   ];
 }
@@ -180,48 +188,52 @@ function makeBookmarkImagesArray() {
   return [
     {
       id: 1,
-      base_url: 'https://www.google.com',
+      base_url: "https://www.google.com",
       bytes: 3035,
       width: 180,
       height: 180,
-      image_url: "https://www.google.com/images/branding/product_ios/3x/gsa_ios_60dp.png",
-      image_format: 'png',
+      image_url:
+        "https://www.google.com/images/branding/product_ios/3x/gsa_ios_60dp.png",
+      image_format: "png",
     },
     {
       id: 2,
-      base_url: 'https://www.google.com',
+      base_url: "https://www.google.com",
       bytes: 2102,
       width: 120,
       height: 120,
-      image_url: "https://www.google.com/images/branding/product_ios/2x/gsa_ios_60dp.png",
-      image_format: 'png',
+      image_url:
+        "https://www.google.com/images/branding/product_ios/2x/gsa_ios_60dp.png",
+      image_format: "png",
     },
     {
       id: 3,
-      base_url: 'https://www.google.com',
+      base_url: "https://www.google.com",
       bytes: 2051,
       width: 114,
       height: 114,
-      image_url: "https://www.google.com/images/branding/product_ios/2x/gsa_ios_57dp.png",
-      image_format: 'png',
+      image_url:
+        "https://www.google.com/images/branding/product_ios/2x/gsa_ios_57dp.png",
+      image_format: "png",
     },
     {
       id: 4,
-      base_url: 'https://www.google.com',
+      base_url: "https://www.google.com",
       bytes: 1044,
       width: 57,
       height: 57,
-      image_url: "https://www.google.com/images/branding/product_ios/1x/gsa_ios_57dp.png",
-      image_format: 'png',
+      image_url:
+        "https://www.google.com/images/branding/product_ios/1x/gsa_ios_57dp.png",
+      image_format: "png",
     },
     {
       id: 5,
-      base_url: 'https://www.google.com',
+      base_url: "https://www.google.com",
       bytes: 5430,
       width: 32,
       height: 32,
       image_url: "https://www.google.com/favicon.ico",
-      image_format: 'ico',
+      image_format: "ico",
     },
   ];
 }
@@ -232,17 +244,13 @@ function makeExpectedPage(user, page) {
     user_id: user.id,
     name: page.name,
     page_order: page.page_order,
-    is_drawer: page.is_drawer
-  }
+    is_drawer: page.is_drawer,
+  };
 }
 
-function makeExpectedBookmark() {
+function makeExpectedBookmark() {}
 
-}
-
-function makeExpectedBookmarkImage() {
-
-}
+function makeExpectedBookmarkImage() {}
 
 function makeMaliciousPage(users) {
   const maliciousPage = {
@@ -250,50 +258,34 @@ function makeMaliciousPage(users) {
     user_id: users[0].id,
     name: 'Bad Name <script>alert("xss");</script>',
     page_order: 1,
-    is_drawer: false
-  }
+    is_drawer: false,
+  };
   const expectedPage = {
     id: 1,
     user_id: users[0].id,
     name: 'Bad Name <script>alert("xss");</script>',
-    name: 'Bad Name &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+    name: 'Bad Name &lt;script&gt;alert("xss");&lt;/script&gt;',
     page_order: 1,
-    is_drawer: false
-  }
+    is_drawer: false,
+  };
   return {
     maliciousPage,
     expectedPage,
-  }
+  };
 }
 
 // do this
 function seedMaliciousPage() {
-  return seedUsers(db, [user])
-    .then(() =>
-      db
-        .into('pages')
-        .insert([page])
-    )
+  return seedUsers(db, [user]).then(() => db.into("pages").insert([page]));
 }
 
+function makeMaliciousBookmark() {}
 
-function makeMaliciousBookmark() {
+function seedMaliciousBookmark() {}
 
-}
+function makeMaliciousBookmarkImage() {}
 
-function seedMaliciousBookmark() {
-
-}
-
-function makeMaliciousBookmarkImage() {
-
-}
-
-function seedMaliciousBookmarkImage() {
-
-}
-
-
+function seedMaliciousBookmarkImage() {}
 
 // function makeExpectedArticleComments(users, articleId, comments) {
 //   const expectedComments = comments
@@ -318,51 +310,53 @@ function seedMaliciousBookmarkImage() {
 // }
 
 function makeBookmarksFixtures() {
-  const testUsers = makeUsersArray()
-  const testPages = makePagesArray(testUsers)
-  const testBookmarks = makeBookmarksArray(testPages)
-  const testBookmarkImages = makeBookmarkImagesArray()
-  return { testUsers, testPages, testBookmarks, testBookmarkImages }
+  const testUsers = makeUsersArray();
+  const testPages = makePagesArray(testUsers);
+  const testBookmarks = makeBookmarksArray(testPages);
+  const testBookmarkImages = makeBookmarkImagesArray();
+  return { testUsers, testPages, testBookmarks, testBookmarkImages };
 }
 
 function cleanTables(db) {
-  return db.transaction(trx =>
-    trx.raw(
-      `TRUNCATE
+  return db.transaction((trx) =>
+    trx
+      .raw(
+        `TRUNCATE
         users,
         pages,
         bookmarks,
         bookmark_images
       `
-    )
-    .then(() =>
-      Promise.all([
-        trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`ALTER SEQUENCE pages_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`ALTER SEQUENCE bookmarks_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`ALTER SEQUENCE bookmark_images_id_seq minvalue 0 START WITH 1`),
-        trx.raw(`SELECT setval('users_id_seq', 0)`),
-        trx.raw(`SELECT setval('pages_id_seq', 0)`),
-        trx.raw(`SELECT setval('bookmarks_id_seq', 0)`),
-        trx.raw(`SELECT setval('bookmark_images_id_seq', 0)`),
-      ])
-    )
-  )
+      )
+      .then(() =>
+        Promise.all([
+          trx.raw(`ALTER SEQUENCE users_id_seq minvalue 0 START WITH 1`),
+          trx.raw(`ALTER SEQUENCE pages_id_seq minvalue 0 START WITH 1`),
+          trx.raw(`ALTER SEQUENCE bookmarks_id_seq minvalue 0 START WITH 1`),
+          trx.raw(
+            `ALTER SEQUENCE bookmark_images_id_seq minvalue 0 START WITH 1`
+          ),
+          trx.raw(`SELECT setval('users_id_seq', 0)`),
+          trx.raw(`SELECT setval('pages_id_seq', 0)`),
+          trx.raw(`SELECT setval('bookmarks_id_seq', 0)`),
+          trx.raw(`SELECT setval('bookmark_images_id_seq', 0)`),
+        ])
+      )
+  );
 }
 
 function seedUsers(db, users) {
-  const preppedUsers = users.map(user => ({
+  const preppedUsers = users.map((user) => ({
     ...user,
-    password: bcrypt.hashSync(user.password, 1)
-  }))
-  return db.into('users').insert(preppedUsers)
+    password: bcrypt.hashSync(user.password, 1),
+  }));
+  return db
+    .into("users")
+    .insert(preppedUsers)
     .then(() =>
       // update the auto sequence to stay in sync
-      db.raw(
-        `SELECT setval('users_id_seq', ?)`,
-        [users[users.length - 1].id],
-      )
-    )
+      db.raw(`SELECT setval('users_id_seq', ?)`, [users[users.length - 1].id])
+    );
 }
 
 // function seedArticlesTables(db, users, articles, comments=[]) {
@@ -389,9 +383,9 @@ function seedUsers(db, users) {
 function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
   const token = jwt.sign({ user_id: user.id }, secret, {
     subject: user.email,
-    algorithm: 'HS256',
-  })
-  return `Bearer ${token}`
+    algorithm: "HS256",
+  });
+  return `Bearer ${token}`;
 }
 
 module.exports = {
@@ -422,4 +416,4 @@ module.exports = {
   // seedMaliciousArticle,
   makeAuthHeader,
   seedUsers,
-}
+};

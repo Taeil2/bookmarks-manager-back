@@ -1,11 +1,11 @@
-const express = require('express')
-const xss = require('xss')
-const logger = require('../logger')
-const BookmarkImagesService = require('./bookmark-images-service')
-const { requireAuth } = require('../middleware/jwt-auth')
+const express = require("express");
+const xss = require("xss");
+const logger = require("../logger");
+const BookmarkImagesService = require("./bookmark-images-service");
+const { requireAuth } = require("../middleware/jwt-auth");
 
-const bookmarkImagesRouter = express.Router()
-const bodyParser = express.json()
+const bookmarkImagesRouter = express.Router();
+const bodyParser = express.json();
 
 const serializeBookmarkImage = (bookmarkImage) => ({
   id: bookmarkImage.id,
@@ -14,40 +14,47 @@ const serializeBookmarkImage = (bookmarkImage) => ({
   width: bookmarkImage.width,
   height: bookmarkImage.height,
   image_url: xss(bookmarkImage.image_url),
-  image_format: bookmarkImage.image_format
-})
+  image_format: bookmarkImage.image_format,
+});
 
-bookmarkImagesRouter
-  .route('/')
-  .get(requireAuth, (req, res, next) => {
-    const base_url = req.query.base_url
-    BookmarkImagesService.getBookmarkImagesByUrl(req.app.get('db'), base_url)
-      .then(bookmarkImages => {
-        return res.json(bookmarkImages.map(serializeBookmarkImage))
-      })
-      .catch(next)
-  })
+bookmarkImagesRouter.route("/").get(requireAuth, (req, res, next) => {
+  const base_url = req.query.base_url;
+  BookmarkImagesService.getBookmarkImagesByUrl(req.app.get("db"), base_url)
+    .then((bookmarkImages) => {
+      return res.json(bookmarkImages.map(serializeBookmarkImage));
+    })
+    .catch(next);
+});
 
-bookmarkImagesRouter
-  .post('/', requireAuth, bodyParser, (req, res, next) => {
-    const { url, icons } = req.body
-    icons.forEach((icon) => {
-      const { width, height, bytes } = icon
-      const base_url = url
-      const image_url = icon.url
-      const image_format = icon.format
+bookmarkImagesRouter.post("/", requireAuth, bodyParser, (req, res, next) => {
+  const { url, icons } = req.body;
+  icons.forEach((icon) => {
+    const { width, height, bytes } = icon;
+    const base_url = url;
+    const image_url = icon.url;
+    const image_format = icon.format;
 
-      const newBookmarkImage = { base_url, bytes, width, height, image_url, image_format }
-      BookmarkImagesService.insertBookmarkImage(req.app.get('db'), newBookmarkImage)
-      .then(bookmarkImage => {
-        logger.info(`Bookmark Image with id ${bookmarkImage.id} created.`)
+    const newBookmarkImage = {
+      base_url,
+      bytes,
+      width,
+      height,
+      image_url,
+      image_format,
+    };
+    BookmarkImagesService.insertBookmarkImage(
+      req.app.get("db"),
+      newBookmarkImage
+    )
+      .then((bookmarkImage) => {
+        logger.info(`Bookmark Image with id ${bookmarkImage.id} created.`);
         res
           .status(201)
           // .location(`/bookmark-images/${bookmarkImage.id}`)
-          .json(serializeBookmarkImage(bookmarkImage))
+          .json(serializeBookmarkImage(bookmarkImage));
       })
-      .catch(next)
-    })
-  })
+      .catch(next);
+  });
+});
 
-module.exports = bookmarkImagesRouter
+module.exports = bookmarkImagesRouter;

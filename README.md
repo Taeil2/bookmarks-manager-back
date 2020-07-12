@@ -54,6 +54,8 @@ Fields
 - icon_alignment
 - enable_groups
 - enable_hiding
+- random_background
+- unsplash_url
 
 #### Pages - /api/pages
 / - GET

@@ -1,0 +1,2 @@
+ALTER TABLE users DROP COLUMN IF EXISTS random_background
+ALTER TABLE users DROP COLUMN IF EXISTS unsplash_url
