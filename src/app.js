@@ -24,7 +24,7 @@ app.use(helmet());
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Welcome! Server is running.");
+  res.send("Welcome to the bookmarks manager server! Server is running.");
 });
 
 app.use("/api/auth", authRouter);
